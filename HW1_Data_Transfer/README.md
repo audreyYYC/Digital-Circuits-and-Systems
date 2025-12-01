@@ -7,7 +7,7 @@ Multi-point data routing circuit implementing destination-based switching with h
 ## Verified Performance Results
 ### Timing & Area (Synthesis Results)
 - **Total Cell Area**: 5,132.635 μm²
-- **Performance Rank**: #1 / 150 students (Best area optimization)
+- **Performance Rank**: #1 / 150 students (BEST CODE)
 - **Timing**: Met 6ns constraint
 - **Technology**: Standard cell library
 
