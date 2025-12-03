@@ -152,16 +152,4 @@ Initial design: >2M μm² with full intermediate matrix storage.
 - Selective computation: eliminated L²-L score storage
 - **Final area**: 1,526,588 μm² (24% reduction)
 
-## Performance Analysis
-
-**Typical Latency (L=32)**:
-- Input RAT: ~32 cycles (pipelined)
-- Q/K/V Projections: ~480 cycles (column-by-column)
-- Attention + Output: ~450 cycles (3-stage pipeline)
-- **Total**: ~1000 cycles @ 4.6ns = 4.6μs
-
-**Memory Efficiency**: 
-- Memory reads: 48 words (4.8% of execution time)
-- Computation: 95.2% of execution time
-
 *Production-ready transformer attention accelerator demonstrating external memory interfacing, custom activation functions, and pipeline optimization for AI inference*
