@@ -2,14 +2,13 @@
 **4-stage pipelined RISC processor supporting integer and neural network activation operations**
 
 ## System Overview
-Pipelined CPU implementing custom instruction set with R-type and I-type instructions. Supports basic arithmetic (add, multiply), bit shifting, and neural network activation functions (ReLU, Leaky ReLU) using 16-bit signed fixed-point representation (Q0.15 format). Features aggressive multiplication optimization through operand decomposition across pipeline stages.
+Pipelined CPU implementing custom instruction set with R-type and I-type instructions. Supports basic arithmetic (add, multiply), bit shifting, and neural network activation functions (ReLU, Leaky ReLU) using 16-bit signed fixed-point representation (Q0.15 format). Uses multiplication operand decomposition across pipeline stages to shorten the critical path.
 
 ## Verified Performance Results
 ### Timing & Area (Synthesis Results)
 - **Total Cell Area**: 82,122.16 μm²
-- **Clock Period**: 2.6ns (aggressive timing optimization)
+- **Clock Period**: 2.6ns
 - **Pipeline Depth**: 4 stages
-- **Latency**: 4-10 cycles per instruction
 - **Register File**: 6 × 16-bit registers
 
 ### Verification Status
@@ -102,7 +101,7 @@ Pipelined CPU implementing custom instruction set with R-type and I-type instruc
 | EXE2 (Stage 3) | Group & shift | Align sub-products by bit position, combine into 7 partial sums |
 | WB (Stage 4) | Final accumulation | Sum partial results and normalize via >>>15 |
 
-This approach reduced cycle time from 10ns to 2.6ns (74% improvement).
+This decomposition supports the verified 2.6ns synthesized clock period.
 
 **Register File Organization**: Direct mapping from instruction bit fields to register file addresses enables single-cycle register access in decode stage. All six registers continuously output via `out_0`-`out_5` signals, eliminating need for read port arbitration or multiplexing delays.
 
@@ -110,10 +109,10 @@ This approach reduced cycle time from 10ns to 2.6ns (74% improvement).
 
 **Instruction Validation**: Invalid opcodes detected in decode stage by comparing against supported instruction table. `instruction_fail` flag propagates through pipeline, causing write-back stage to preserve existing register values rather than updating with erroneous results.
 
-**Pipeline Hazard Avoidance**: Test patterns guarantee no read-after-write (RAW) dependencies within 4-instruction windows, eliminating need for forwarding logic or stall mechanisms. This simplifies control logic significantly while maintaining correctness.
+**Dependency Assumption**: The official test patterns guarantee no read-after-write (RAW) dependencies within four-instruction windows. Under that constraint, this implementation omits forwarding and stall hardware.
 
 ## Design Challenges
-Primary challenge involved critical path dominated by 16×16 multiplication. Initial single-cycle multiplication design couldn't meet timing even at 10ns cycle period. Solution required algorithmic restructuring: decomposing multiplication into smaller operations distributable across pipeline stages.
+The primary timing challenge was the 16×16 multiplication path. The implementation decomposes it into smaller operations distributed across pipeline stages.
 
 The decomposition strategy splits each 16-bit signed operand into four 4-bit chunks. With two operands, this generates 4×4=16 partial products. However, these products require careful alignment and sign extension handling:
 - Products from high-order chunks need left-shifting before accumulation
@@ -124,11 +123,11 @@ Additional complexity from Leaky ReLU operation requiring conditional multiplica
 
 ## Performance Optimization Results
 
-| Metric | Initial Design | Optimized Design | Improvement |
-|--------|---------------|------------------|-------------|
-| **Cycle Time** | 10.0ns | 2.6ns | 74% reduction |
-| **Critical Path** | 16×16 multiplier | 4×4 multiplier + adder | Distributed across stages |
-| **Area** | - | 82,122.16 μm² | Balanced area/timing trade-off |
-| **Performance Score** | Area × Cycles × 10² | Area × Cycles × 2.6² | ~84% improvement |
+| Metric | Verified result |
+|--------|-----------------|
+| **Clock Period** | 2.6ns |
+| **Total Cell Area** | 82,122.16 μm² |
+| **Pipeline Depth** | 4 stages |
+| **Multiplication Datapath** | Sixteen 4×4 partial products distributed across EXE1, EXE2, and WB |
 
-*High-performance pipelined CPU demonstrating instruction set design, fixed-point arithmetic, and critical path optimization through algorithmic decomposition*
+*Pipelined CPU demonstrating instruction-set design, fixed-point arithmetic, and critical-path restructuring through operand decomposition.*

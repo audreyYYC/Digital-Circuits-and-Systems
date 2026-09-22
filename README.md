@@ -1,17 +1,17 @@
 # Digital Circuits and Systems (DCS)
-**Complete coursework for NYCU Digital Circuits and Systems (2025 Spring)**
+**Coursework portfolio for NYCU Digital Circuits and Systems (2025 Spring)**
 
-Hardware design projects progressing from basic combinational circuits to a complete transformer-based AI accelerator. Covers RTL design, synthesis, timing optimization, FSM implementation, pipeline architecture, and memory interfaces using SystemVerilog.
+Hardware design projects progressing from basic combinational circuits to a transformer-based AI accelerator. Covers RTL design, synthesis, timing optimization, FSM implementation, pipeline architecture, and memory interfaces using SystemVerilog.
 
 ## Repository Overview
 
-This repository contains all coursework from NYCU's Digital Circuits and Systems course, demonstrating progression from fundamental digital logic to complex AI accelerator design.
+This repository presents selected coursework from NYCU's Digital Circuits and Systems course, demonstrating progression from fundamental digital logic to AI accelerator design.
 
 ### Course Projects
 
 | Project | Topic | Area (μm²) | Cycle Time | Key Achievement |
 |---------|-------|------------|------------|-----------------|
-| [**HW1**](HW1_Simple_Data_Transfer/) | Data Transfer Router | 5,132 | 6.0ns | #1 ranked (best area optimization) |
+| [**HW1**](HW1_Data_Transfer/) | Data Transfer Router | 5,132 | 6.0ns | #1 ranked (best area optimization) |
 | [**HW2**](HW2_GCD_Compression/) | GCD Compression | 6,087 | 7.0ns | Lookup table optimization |
 | [**HW3**](HW3_Sparse_Matrix_Calculator/) | Sparse Matrix-Vector Multiply | 122,056 | 8.0ns | Zero-skipping MAC operations |
 | [**HW4**](HW4_Matrix_Multiply_Accumulate/) | MAC Array (MatMul + Conv) | 41,520 | 10.0ns | Dual-mode accelerator |
@@ -53,17 +53,17 @@ Pipelined RISC processor with fixed-point arithmetic and neural network activati
 
 **Key Features**: 4-stage pipeline (IF/ID → EXE1 → EXE2 → WB), Q0.15 fixed-point format, ReLU/Leaky ReLU hardware  
 **Optimization**: 16×16 multiplication decomposed into sixteen 4×4 operations across pipeline stages  
-**Achievement**: 2.6ns cycle time (74% improvement from initial 10ns design)
+**Result**: 2.6ns synthesized clock period
 
 ### Final Project: Transformer Attention Accelerator (1,526,588 μm², 4.6ns)
-Complete attention mechanism accelerator with external memory interface and custom activation functions.
+Simplified attention accelerator with an external memory interface and custom activation functions.
 
 **Key Features**: 
 - 14-state FSM coordinating memory access and computation
 - Custom "Tom & Jerry" activations (RAT, CAT, SLT) for attention score filtering
 - Variable sequence length support (4, 8, 16, 32 tokens)
 - Pipelined matrix multiplication with operand decomposition (6-bit chunks)
-- Q/V register reuse saving ~42,000 μm²
+- Q/V register reuse to reduce duplicate on-chip storage
 
 **Optimizations**:
 - Column-by-column weight fetch (87.5% storage reduction)
@@ -76,7 +76,7 @@ Complete attention mechanism accelerator with external memory interface and cust
 - SystemVerilog synthesis and simulation
 - Combinational and sequential logic separation
 - FSM design and state transition optimization
-- Pipeline architecture and hazard handling
+- Pipeline architecture and dependency-constrained instruction scheduling
 - Resource sharing and register reuse
 
 ### Performance Optimization
@@ -118,7 +118,7 @@ Complete attention mechanism accelerator with external memory interface and cust
 ## Repository Structure
 ```
 DIGITAL-CIRCUITS-AND-SYSTEMS/
-├── HW1_Simple_Data_Transfer/
+├── HW1_Data_Transfer/
 │   ├── DT.sv
 │   └── README.md
 ├── HW2_GCD_Compression/
@@ -167,7 +167,6 @@ DIGITAL-CIRCUITS-AND-SYSTEMS/
 ### Optimization Techniques
 1. **Timing**: Pipeline long paths, decompose large multipliers, balance logic depth
 2. **Area**: Register sharing, selective computation, efficient encoding
-3. **Power**: Clock gating, operand isolation, reduced bit-width where possible
 4. **Memory**: Access pattern optimization, data reuse, reduced bandwidth
 
 ## Course Progression
@@ -184,14 +183,14 @@ DIGITAL-CIRCUITS-AND-SYSTEMS/
 - **Most Complex**: Final Project (1,526,588 μm²) - 14-state FSM with memory interface
 
 ### Timing Optimization  
-- **Fastest**: HW5 (2.6ns) - Aggressive pipelining with operand decomposition
+- **Fastest**: HW5 (2.6ns) - Multi-stage pipelining with operand decomposition
 - **Most Challenging**: Final Project (4.6ns) - Complex datapath with multi-bit multiplications
 
 ### Design Complexity
 - **Simple**: HW1-2 (pure combinational / basic FSM)
 - **Medium**: HW3-4 (matrix operations, resource sharing)
-- **Advanced**: HW5 (pipelined CPU with hazard handling)
-- **Expert**: Final Project (full system with external memory, custom ops)
+- **Pipelined processor**: HW5 (four-stage CPU under dependency-constrained test patterns)
+- **System-level accelerator**: Final Project (external memory interface and custom operations)
 
 ## Acknowledgments
 
@@ -201,4 +200,4 @@ Instructor: Tian-Sheuan Chang
 
 ---
 
-*This repository represents a complete semester of digital design coursework, progressing from basic logic gates to a production-ready AI accelerator. Each project demonstrates systematic approach to hardware design, optimization, and verification.*
+*This repository documents a semester-long progression from fundamental RTL design to pipelined processor and accelerator projects.*

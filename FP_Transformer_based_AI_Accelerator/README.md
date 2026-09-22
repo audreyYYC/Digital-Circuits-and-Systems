@@ -9,7 +9,6 @@ Specialized AI accelerator implementing simplified transformer attention computa
 - **Total Cell Area**: 1,526,588.098 μm²
 - **Clock Period**: 4.6ns
 - **Pipeline Depth**: 2-3 stages for critical operations
-- **Max Latency**: <10,000 cycles per pattern
 - **Supported Sequence Lengths**: 4, 8, 16, 32 tokens
 
 ### Verification Status
@@ -24,8 +23,8 @@ Specialized AI accelerator implementing simplified transformer attention computa
 - **14-State FSM**: Complex state machine coordinating dataflow and memory access
 - **Pipelined Multiplication**: Multi-stage pipelines with operand decomposition (6-bit chunks)
 - **Custom Activation Functions**: RAT (row threshold), CAT (column threshold), SLT (token selection)
-- **External Memory Interface**: Handshake protocol with virtual ROM (48 total memory accesses)
-- **Resource Sharing**: Q/V register reuse reduces area by ~42,000 μm²
+- **External Memory Interface**: Handshake protocol with a virtual ROM
+- **Resource Sharing**: Q/V register reuse reduces duplicate on-chip storage
 - **Selective Computation**: SLT integrated into attention score calculation—only compute last row
 
 ## Technical Specifications
@@ -105,13 +104,13 @@ i_token (L×8) → RAT → i_token' → [Q/K/V Projections] → Q × K^T → CAT
 
 **Column-by-Column Weight Fetch**: Instead of loading full 8×8 weight matrix (64 elements), fetch one column at a time (8 elements). Reduces on-chip weight storage from 192 to 24 elements (87.5% reduction).
 
-**Overlapped Read-Compute**: During RAT processing, read row N+1 while processing row N, halving input phase latency.
+**Overlapped Read-Compute**: During RAT processing, read row N+1 while processing row N.
 
 **Selective Attention Computation**: Rather than computing full L×L attention matrix, directly compute only last row during Q×K^T. Eliminates storage of L²-L intermediate values.
 
 ### Resource Sharing
 
-**Q/V Register Reuse**: After attention score computation completes, repurpose Q matrix registers (64 elements) for V matrix storage. Saves ~42,000 μm² area.
+**Q/V Register Reuse**: After attention score computation completes, repurpose Q matrix registers (64 elements) for V matrix storage, avoiding a duplicate register bank.
 
 **Pointer Consolidation**: Single `ptr` register tracks progress across multiple FSM states (MM_Q2, MM_K2, MM_V2, MM_S1).
 
@@ -121,7 +120,6 @@ i_token (L×8) → RAT → i_token' → [Q/K/V Projections] → Q × K^T → CAT
 - 6×6-bit multipliers (instead of 24×12)
 - Multi-stage accumulation trees
 - Register-balanced pipeline stages
-- Achieved 15% timing slack at synthesis
 
 ## Design Challenges
 
@@ -131,7 +129,7 @@ i_token (L×8) → RAT → i_token' → [Q/K/V Projections] → Q × K^T → CAT
 **Solution**: Modular verification—validated each FSM state independently before integration. Extensive waveform debugging to trace data through pipelines.
 
 ### Multiplication Critical Path
-Direct 11×11-bit multiplication exceeded 4.6ns budget. Initial synthesis failed timing by 40%.
+Direct 11×11-bit multiplication exceeded the 4.6ns target.
 
 **Solution**: Operand decomposition into 6-bit chunks distributed across 2-3 pipeline stages. Reduced critical path to 6×6 multiplier + accumulator chain.
 
@@ -144,12 +142,9 @@ V-ROM provides only 8 elements per cycle. For L=32, need 32 cycles just for inpu
 - Integrated SLT to avoid storing full attention matrix
 
 ### Area Optimization
-Initial design: >2M μm² with full intermediate matrix storage.
+- Q/V register sharing avoids a duplicate on-chip matrix store
+- Column-wise weight fetch reduces weight storage from 192 to 24 elements (87.5%)
+- Selective computation eliminates storage for L²-L attention-score values
+- **Final synthesized cell area**: 1,526,588.098 μm²
 
-**Solution**:
-- Q/V register sharing: -42K μm²
-- Column-wise weight fetch: -87.5% weight storage
-- Selective computation: eliminated L²-L score storage
-- **Final area**: 1,526,588 μm² (24% reduction)
-
-*Production-ready transformer attention accelerator demonstrating external memory interfacing, custom activation functions, and pipeline optimization for AI inference*
+*Synthesized transformer attention accelerator demonstrating external memory interfacing, custom activation functions, and pipelined arithmetic.*
